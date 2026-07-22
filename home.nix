@@ -1,0 +1,142 @@
+{ config, pkgs, ... }:
+
+let
+  dotfiles = "${config.home.homeDirectory}/nixos-dots/config";
+  create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
+  configs = {
+    qtile = "qtile";
+    nvim = "nvim";
+    alacritty = "alacritty";
+    rofi = "rofi";
+    picom = "picom";
+    hypr = "hypr";
+    waybar = "waybar";
+  };
+in
+
+{
+  home.username = "pilot";
+  home.homeDirectory = "/home/pilot";
+  home.stateVersion = "25.05";
+
+  programs.git = {
+    enable = true;
+    userName = "pilot";
+    userEmail = "keerthi.modi1910@gmail.com";
+  };
+
+# Symlink Home Manager themes to standard directories so Flatpak can read them
+  home.file = {
+    ".local/share/themes".source = create_symlink "${config.home.profileDirectory}/share/themes";
+    ".local/share/icons".source = create_symlink "${config.home.profileDirectory}/share/icons";
+  };
+
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      btw = "echo i use nixos, btw";
+      nrs = "sudo nixos-rebuild switch --flake ~/nixos-dots#pixos";
+      ls = "eza -lha --group-directories-first --icons=auto";
+      lsa = " ls -a";
+      ff = "fzf --preview 'bat --style=numbers --color=always {}'";
+    };
+  };
+
+  programs.tmux.enable = true;
+
+  programs.eza = {
+    enable = true;
+    enableBashIntegration = true;
+    git = true;
+    icons = "auto";
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  # GTK Configuration
+  gtk = {
+    enable = true;
+    # gtk-application-prefer-dark-theme=1;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.adwaita-icon-theme; # Note: 'gnome.' prefix is often not needed in newer Nixpkgs
+    };
+  };
+  
+  # Qt Configuration (This fixes Dolphin!)
+  # qt = {
+  #   enable = true;
+  #   platformTheme.name = "gtk"; 
+  #   style.name = "";
+  # };
+
+  # Clipboard manager - pairs with rofi + xclip, which are already in your setup.
+  # Bind a key in your qtile config to run `clipmenu` to pull up the picker.
+  services.clipmenu.enable = true;
+
+  # Notification daemon
+  services.dunst = {
+    enable = true;
+    settings = {
+      global = {
+        follow = "mouse";
+        width = 300;
+        height = 300;
+        origin = "top-right";
+        offset = "10x50";
+        frame_width = 2;
+        font = "JetBrainsMono Nerd Font 10";
+      };
+      urgency_normal = {
+        timeout = 5;
+      };
+    };
+  };
+
+  xdg.configFile = (builtins.mapAttrs
+    (name: subpath: {
+      source = create_symlink "${dotfiles}/${subpath}";
+      recursive = true;
+    })
+    configs) // {
+      "kwalletrc".text = ''
+        [Wallet]
+        Enabled=false
+    '';
+  };
+
+# Ensure environment variables are set for GTK and Qtile
+  home.sessionVariables = {
+    XDG_DATA_DIRS = "$HOME/.nix-profile/share:$XDG_DATA_DIRS";
+    DOTFILES_DIR = "${config.home.homeDirectory}/nixos-dots";
+    WALLPAPERS_DIR = "${config.home.homeDirectory}/Pictures/walls"; # Adjust this path to wherever your backgrounds are stored
+    QT_QPA_PLATFORMTHEME = "qt5ct";
+  };
+
+  home.packages = with pkgs; [
+    neovim
+    ripgrep
+    nil
+    nixpkgs-fmt
+    nodejs
+    gcc
+    xclip
+    xwallpaper
+    fd
+    xdg-utils
+    file-roller
+    scrcpy
+    # Hunting Nixpkgs on the big screen
+    # (pkgs.writeShellApplication {
+    #   name = "ns";
+    #   runtimeInputs = with pkgs; [
+    #     fzf
+    #     nix-search-tv
+    #   ];
+    #   text = builtins.readFile "${pkgs.nix-search-tv.src}/nixpkgs.sh";
+    # })
+  ];
+}
