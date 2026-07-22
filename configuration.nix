@@ -93,7 +93,6 @@
   programs.firefox.enable = true;
 
   virtualisation.virtualbox.host.enable = true;
-  virtualisation.virtualbox.host.enableExtensionPack = true;
   users.extraGroups.vboxusers.members = [ "pilot" ];
 
   # Flatpak support (for LocalSend and Heroic, installed as Flatpaks)
@@ -110,22 +109,6 @@
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-  };
-
-  gtk = {
-      enable = true;
-      theme = {
-        name = "Gruvbox-Dark";
-        package = pkgs.gruvbox-dark-gtk;
-      };
-      iconTheme = {
-        name = "Gruvbox-Plus-Dark";
-        package = pkgs.gruvbox-plus-icons;
-      };
-      cursorTheme = {
-        name = "capitaine-cursors-gruvbox";
-        package = pkgs.capitaine-cursors-gruvbox;
-      };
   };
 
   # Mount HDD or extra storage
@@ -179,8 +162,6 @@
   wofi
   grim
   slurp
-  pkgs.zed-editor
-  xfce.xfce-polkit
   mako
   cliphist
   libnotify
@@ -190,6 +171,7 @@
   qbittorrent
   mpv
   xclip
+  vscode
   # ------- #
   btop
   flameshot

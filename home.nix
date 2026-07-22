@@ -61,8 +61,16 @@ in
     enable = true;
     # gtk-application-prefer-dark-theme=1;
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.adwaita-icon-theme; # Note: 'gnome.' prefix is often not needed in newer Nixpkgs
+      name = "Gruvbox-Dark";
+      package = pkgs.gruvbox-dark-gtk;
+    };
+    iconTheme = {
+      name = "Gruvbox-Plus-Dark";
+      package = pkgs.gruvbox-plus-icons;
+    };
+    cursorTheme = {
+      name = "capitaine-cursors-gruvbox";
+      package = pkgs.capitaine-cursors-themed;
     };
   };
   
@@ -76,6 +84,25 @@ in
   # Clipboard manager - pairs with rofi + xclip, which are already in your setup.
   # Bind a key in your qtile config to run `clipmenu` to pull up the picker.
   services.clipmenu.enable = true;
+
+  # Polkit authentication agent (needed since qtile/Hyprland don't provide one)
+  systemd.user.services.polkit-gnome-authentication-agent-1 = {
+    Unit = {
+      Description = "polkit-gnome-authentication-agent-1";
+      Wants = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
 
   # Notification daemon
   services.dunst = {
