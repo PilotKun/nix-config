@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ~/nix-dots/config/scripts/vars.sh
+. ~/nixos-dots/config/scripts/vars.sh
 
 p_exit="Exit ${WM_NAME}"
 p_reboot="Reboot"

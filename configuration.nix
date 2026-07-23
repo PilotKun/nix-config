@@ -165,6 +165,7 @@
   mako
   cliphist
   libnotify
+  pkgs.polkit_gnome
  # ------- #
   brave
   firefox
