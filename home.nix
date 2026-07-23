@@ -39,6 +39,7 @@ in
       ls = "eza -lha --group-directories-first --icons=auto";
       lsa = " ls -a";
       ff = "fzf --preview 'bat --style=numbers --color=always {}'";
+      pilothomelab = "ssh pilot_homelab@192.168.0.104";
     };
   };
 

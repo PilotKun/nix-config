@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WAYBAR_CFG_DIR="$HOME/nix-dots/config/waybar"
+WAYBAR_CFG_DIR="$HOME/nixos-dots/config/waybar"
 
 sleep 0.1
 
